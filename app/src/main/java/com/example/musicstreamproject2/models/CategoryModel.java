@@ -12,11 +12,11 @@ public class CategoryModel {
         this.coverURL=coverURL;
     }
 
-    public String getCategoryName()
+    public String getName()
     {
         return name;
     }
-    public String getCategoryCoverURL()
+    public String getCoverURL()
     {
         return coverURL;
     }

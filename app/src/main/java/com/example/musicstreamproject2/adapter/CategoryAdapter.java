@@ -37,7 +37,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         CategoryModel categoryModel=arrayList.get(position);
-        holder.textView.setText(categoryModel.getCategoryName());
+        holder.textView.setText(categoryModel.getName());
         //TODO: setup glide and load images using URL:
     }
 
