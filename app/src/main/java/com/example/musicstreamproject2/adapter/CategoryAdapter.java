@@ -1,6 +1,7 @@
 package com.example.musicstreamproject2.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.musicstreamproject2.R;
 import com.example.musicstreamproject2.models.CategoryModel;
 
@@ -38,7 +42,20 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         CategoryModel categoryModel=arrayList.get(position);
         holder.textView.setText(categoryModel.getName());
-        //TODO: setup glide and load images using URL:
+        //TODO: setup glide and load images using URL
+        // .thumbnail() deprecated use this [suggested by glide documentation to replecate .thumbnail()]
+        RequestBuilder<Drawable> thumbnailRequest = Glide.with(holder.itemView.getContext())
+                .load(categoryModel.getCoverURL())
+                .sizeMultiplier(0.01f); // tiny thumbnail
+
+        Glide.with(holder.itemView.getContext())
+                .load(categoryModel.getCoverURL())
+                .thumbnail(thumbnailRequest) // ✅ RequestBuilder with multiplier
+                .sizeMultiplier(0.8f)        // ✅ final image size 80%
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // optional
+                .into(holder.imageView);
+
+
     }
 
     @Override
