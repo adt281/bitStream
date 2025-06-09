@@ -1,6 +1,7 @@
 package com.example.musicstreamproject2.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.musicstreamproject2.R;
+import com.example.musicstreamproject2.SongsListActivity;
 import com.example.musicstreamproject2.models.CategoryModel;
 
 import java.util.ArrayList;
@@ -55,6 +57,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // optional
                 .into(holder.imageView);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, SongsListActivity.class);
+                intent.putExtra("category_name", categoryModel.getName());
+                intent.putExtra("category_coverURL", categoryModel.getCoverURL());
+                intent.putIntegerArrayListExtra("category_songs", new ArrayList<>(categoryModel.getSongs()));
+                context.startActivity(intent);
+            }
+        });
 
     }
 
@@ -74,4 +86,5 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
             textView=itemView.findViewById(R.id.name_text_viewID);
         }
     }
+
 }

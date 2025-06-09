@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
         getCategories();
 
+
+
     }
 
 
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(categoryAdapter);
 
     }
+
+
 
 
 }
