@@ -1,6 +1,7 @@
 package com.example.musicstreamproject2;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -9,10 +10,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.musicstreamproject2.adapter.SongListAdapter;
 
 import java.util.ArrayList;
 
@@ -28,7 +31,7 @@ public class SongsListActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_songs_list);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.acitvity_songs_main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.activity_songs_main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -43,6 +46,8 @@ public class SongsListActivity extends AppCompatActivity {
         String name = getIntent().getStringExtra("category_name");
         String coverURL = getIntent().getStringExtra("category_coverURL");
         ArrayList<Integer> songs = getIntent().getIntegerArrayListExtra("category_songs");
+        //Log.d for this list:
+        Log.d("InsideSongsListActivity", ""+songs);
 
         // 🖼️ Load Image using Glide
         Glide.with(this)
@@ -59,12 +64,12 @@ public class SongsListActivity extends AppCompatActivity {
         // 📝 Set name
         nameTextView.setText(name);
 
-        // 🔁 Setup RecyclerView (stubbed)
-        // You’ll need to implement a SongAdapter if you want to display songs
-        /*
-        SongAdapter adapter = new SongAdapter(songs);
+        // 🔁 Setup RecyclerView
+        SongListAdapter adapter = new SongListAdapter(songs,this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-        */
+
+
     }
+
 }

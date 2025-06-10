@@ -3,6 +3,7 @@ package com.example.musicstreamproject2.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +44,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         CategoryModel categoryModel=arrayList.get(position);
+
+        //set the parameters:
         holder.textView.setText(categoryModel.getName());
-        //TODO: setup glide and load images using URL
+
+
+        // setup glide and load images using URL
         // .thumbnail() deprecated use this [suggested by glide documentation to replecate .thumbnail()]
         RequestBuilder<Drawable> thumbnailRequest = Glide.with(holder.itemView.getContext())
                 .load(categoryModel.getCoverURL())
@@ -53,13 +58,22 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         Glide.with(holder.itemView.getContext())
                 .load(categoryModel.getCoverURL())
                 .thumbnail(thumbnailRequest) // ✅ RequestBuilder with multiplier
-                .sizeMultiplier(0.8f)        // ✅ final image size 80%
+                .sizeMultiplier(0.6f)        // ✅ final image size 60%
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // optional
                 .into(holder.imageView);
 
+        //Log.d for the list of ID's:
+        Log.d("IDS",""+categoryModel.getSongs());
+
+        //we have got the ID's of songs associated with every Category, on click we just need to send these
+        //Ids now to the SongsListActivity
+
+        //click listener for card:
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //TODO: Launching SongsListActivity and Sending all the data !!!!
                 Intent intent = new Intent(context, SongsListActivity.class);
                 intent.putExtra("category_name", categoryModel.getName());
                 intent.putExtra("category_coverURL", categoryModel.getCoverURL());
