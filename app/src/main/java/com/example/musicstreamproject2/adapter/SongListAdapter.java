@@ -19,12 +19,12 @@ import java.util.ArrayList;
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyViewHolder>{
 
     //TODO: Instead of songModel objects we just take in the song ID's and obtain the SongModel from the songs database!!
-    ArrayList<Integer> arrayList;
+    ArrayList<SongModel> arrayList;
 
     Context context;
 
     //user defined constructor:
-    public SongListAdapter(ArrayList<Integer> arrayList, Context context)
+    public SongListAdapter(ArrayList<SongModel> arrayList, Context context)
     {
         this.arrayList=arrayList;
         this.context=context;
@@ -41,21 +41,10 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        SongModel songModel = arrayList.get(position);
+        holder.textViewTitle.setText(songModel.getTitle());
+        holder.textViewSubtitle.setText(songModel.getSubtitle());
 
-        Integer songId= arrayList.get(position);
-        //TODO: Obtain the SongModel object from the database using the ID !!
-
-        FirebaseFirestore.getInstance().collection("songs")
-                .document(String.valueOf(songId)).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    SongModel songModel = documentSnapshot.toObject(SongModel.class);
-                    if (songModel != null) {
-                        // Set text views and load cover with Glide
-                        holder.textViewTitle.setText(songModel.getTitle());
-                        holder.textViewSubtitle.setText(songModel.getSubtitle());
-
-                    }
-                });
 
 
     }

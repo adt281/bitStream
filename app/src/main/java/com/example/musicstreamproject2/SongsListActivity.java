@@ -16,8 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.musicstreamproject2.adapter.SongListAdapter;
+import com.example.musicstreamproject2.models.SongModel;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SongsListActivity extends AppCompatActivity {
 
@@ -63,11 +69,36 @@ public class SongsListActivity extends AppCompatActivity {
 
         // 📝 Set name
         nameTextView.setText(name);
-
-        // 🔁 Setup RecyclerView
-        SongListAdapter adapter = new SongListAdapter(songs,this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
+
+
+        //TODO: using id's here itself obtain the SongModel list of song metadata using wherein() using id's
+        if (songs != null && !songs.isEmpty()) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            List<String> stringIds = songs.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
+
+            db.collection("songs")
+                    .whereIn(FieldPath.documentId(), stringIds.subList(0, Math.min(10, stringIds.size())))
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        List<SongModel> songsList = new ArrayList<>();
+                        for (DocumentSnapshot doc : querySnapshot) {
+                            SongModel model = doc.toObject(SongModel.class);
+                            if (model != null) {
+                                songsList.add(model);
+                            }
+                        }
+
+                        SongListAdapter adapter = new SongListAdapter((ArrayList<SongModel>) songsList, this);
+                        recyclerView.setAdapter(adapter);
+                    });
+        } else {
+            // 🧹 Graceful handling when song list is empty
+            recyclerView.setAdapter(new SongListAdapter(new ArrayList<>(), this));
+        }
 
 
     }
