@@ -30,11 +30,21 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    //TODO: WRITE THIS HERE TO MAKE BINDING POSSIBLE 
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
     //glide:
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    //exoplayer:
+    implementation("androidx.media3:media3-exoplayer:1.7.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.7.1")
+    implementation("androidx.media3:media3-ui:1.7.1")
+    implementation("androidx.media3:media3-ui-compose:1.7.1")
 
     implementation(libs.appcompat)
     implementation(libs.material)
