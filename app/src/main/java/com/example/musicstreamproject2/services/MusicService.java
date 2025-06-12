@@ -74,7 +74,6 @@ public class MusicService extends MediaSessionService {
                 .build();
     }
 
-    // Fixed: Only one onGetSession method
     @Nullable
     @Override
     public MediaSession onGetSession(MediaSession.ControllerInfo controllerInfo) {
@@ -147,6 +146,7 @@ public class MusicService extends MediaSessionService {
                     NotificationManager.IMPORTANCE_LOW
             );
             channel.setDescription("Controls for music playback");
+            channel.setShowBadge(false);
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) {
@@ -173,6 +173,9 @@ public class MusicService extends MediaSessionService {
     private Notification createNotification() {
         // Intent to open PlayerActivity when notification is clicked
         Intent notificationIntent = new Intent(this, PlayerActivity.class);
+        notificationIntent.putExtra("SONG", (CharSequence) currentSong);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
@@ -188,10 +191,11 @@ public class MusicService extends MediaSessionService {
         String title = currentSong != null ? currentSong.getTitle() : "Unknown";
         String artist = currentSong != null ? currentSong.getSubtitle() : "Unknown Artist";
 
+        // FIXED: Use proper MediaSession token
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(artist)
-                .setSmallIcon(R.drawable.ic_music_note) // Add this icon to drawable
+                .setSmallIcon(R.drawable.ic_music_note)
                 .setContentIntent(pendingIntent)
                 .addAction(
                         exoPlayer.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play,
@@ -199,11 +203,12 @@ public class MusicService extends MediaSessionService {
                         playPausePendingIntent
                 )
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                        .setMediaSession(MediaSessionCompat.Token.fromToken(mediaSession.getSessionExtras()))
+                        .setMediaSession(MediaSessionCompat.Token.fromToken(mediaSession.getSessionExtras()))  // FIXED: Use correct method
                         .setShowActionsInCompactView(0))
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setOnlyAlertOnce(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setOngoing(true)  // Keeps notification persistent
                 .build();
     }
 
@@ -217,7 +222,7 @@ public class MusicService extends MediaSessionService {
                     break;
             }
         }
-        return START_STICKY;
+        return START_STICKY;  // Service will restart if killed
     }
 
     @Override

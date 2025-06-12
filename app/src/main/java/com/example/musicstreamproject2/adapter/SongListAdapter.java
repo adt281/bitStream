@@ -1,6 +1,8 @@
 package com.example.musicstreamproject2.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicstreamproject2.R;
 import com.example.musicstreamproject2.models.SongModel;
+import com.example.musicstreamproject2.player.MyExoPlayer;
+import com.example.musicstreamproject2.player.PlayerActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -45,6 +49,18 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
         holder.textViewTitle.setText(songModel.getTitle());
         holder.textViewSubtitle.setText(songModel.getSubtitle());
 
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //MyExoPlayer.startPlaying(holder.itemView.getContext(), songModel);
+                Context context = holder.itemView.getContext();
+                Intent intent = new Intent(context, PlayerActivity.class);
+                intent.putExtra("song", (Parcelable) songModel);  // SongModel must be Serializable or Parcelable
+                context.startActivity(intent);
+
+            }
+        });
 
 
     }

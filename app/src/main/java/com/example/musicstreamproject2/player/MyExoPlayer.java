@@ -9,33 +9,31 @@ import androidx.media3.exoplayer.ExoPlayer;
 import com.example.musicstreamproject2.models.SongModel;
 
 public class MyExoPlayer {
-    ExoPlayer exoPlayer=null;
-    SongModel currentSongModel=null;
 
-    public MyExoPlayer(ExoPlayer exoPlayer)
-    {
-        this.exoPlayer= exoPlayer;
-    }
-    public MyExoPlayer()
-    {
+    private static ExoPlayer exoPlayer = null;
+    private static SongModel currentSong = null;
 
+    private MyExoPlayer() {
+        // private constructor to prevent instantiation
     }
-    public ExoPlayer getInstance()
-    {
+
+    public static SongModel getCurrentSong() {
+        return currentSong;
+    }
+
+    public static ExoPlayer getInstance() {
         return exoPlayer;
     }
 
-    public void startPlaying(Context context, SongModel currentSongModel) {
-
+    public static void startPlaying(Context context, SongModel song) {
         if (exoPlayer == null) {
             exoPlayer = new ExoPlayer.Builder(context).build();
         }
 
-        //so that tapping on the same song doesnt restart it
-        if(this.currentSongModel==null || this.currentSongModel!=currentSongModel) {
-            this.currentSongModel = currentSongModel;
+        if (currentSong == null || !currentSong.equals(song)) {
+            currentSong = song;
 
-            String url = currentSongModel.getUrl();
+            String url = currentSong.getUrl();
             if (url != null) {
                 MediaItem mediaItem = MediaItem.fromUri(Uri.parse(url));
                 exoPlayer.setMediaItem(mediaItem);
@@ -44,7 +42,4 @@ public class MyExoPlayer {
             }
         }
     }
-
-
-
 }
