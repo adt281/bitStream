@@ -1,6 +1,7 @@
 package com.example.musicstreamproject2.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicstreamproject2.R;
 import com.example.musicstreamproject2.models.SongModel;
+import com.example.musicstreamproject2.player.MyExoPlayer;
+import com.example.musicstreamproject2.player.PlayerActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -45,7 +48,20 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
         holder.textViewTitle.setText(songModel.getTitle());
         holder.textViewSubtitle.setText(songModel.getSubtitle());
 
+        //TODO: load the image using glide.
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Start playing the song
+                MyExoPlayer.startPlaying(holder.itemView.getContext(), songModel);
+
+                // Start PlayerActivity
+                Context context = holder.itemView.getContext();
+                Intent intent = new Intent(context, PlayerActivity.class);
+                context.startActivity(intent);
+            }
+        });
 
     }
 
