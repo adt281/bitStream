@@ -2,6 +2,7 @@ package com.example.musicstreamproject2.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.musicstreamproject2.R;
 import com.example.musicstreamproject2.models.SongModel;
 import com.example.musicstreamproject2.player.MyExoPlayer;
@@ -49,6 +53,18 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
         holder.textViewSubtitle.setText(songModel.getSubtitle());
 
         //TODO: load the image using glide.
+        // setup glide and load images using URL
+        // .thumbnail() deprecated use this [suggested by glide documentation to replecate .thumbnail()]
+        RequestBuilder<Drawable> thumbnailRequest = Glide.with(holder.itemView.getContext())
+                .load(songModel.getCoverUrl())
+                .sizeMultiplier(0.01f); // tiny thumbnail
+
+        Glide.with(holder.itemView.getContext())
+                .load(songModel.getCoverUrl())
+                .thumbnail(thumbnailRequest) // ✅ RequestBuilder with multiplier
+                .sizeMultiplier(0.5f)        // ✅ final image size 10%
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // optional
+                .into(holder.imageView);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

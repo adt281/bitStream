@@ -6,4 +6,16 @@
     </style>
 
     <style name="Theme.MusicStreamProject2" parent="Base.Theme.MusicStreamProject2" />
+
+
+
+    <style name="RoundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">36dp</item>
+        <item name="cornerSizeTopRight">36dp</item>
+        <item name="cornerSizeBottomRight">36dp</item>
+        <item name="cornerSizeBottomLeft">36dp</item>
+    </style>
+
+
 </resources>

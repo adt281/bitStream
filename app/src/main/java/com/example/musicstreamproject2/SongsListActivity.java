@@ -1,5 +1,6 @@
 package com.example.musicstreamproject2;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.musicstreamproject2.adapter.SongListAdapter;
 import com.example.musicstreamproject2.models.SongModel;
@@ -56,16 +58,17 @@ public class SongsListActivity extends AppCompatActivity {
         Log.d("InsideSongsListActivity", ""+songs);
 
         // 🖼️ Load Image using Glide
+        RequestBuilder<Drawable> thumbnailRequest = Glide.with(this)
+                .load(coverURL)
+                .sizeMultiplier(0.01f); // tiny thumbnail
+
         Glide.with(this)
                 .load(coverURL)
-                .thumbnail(
-                        Glide.with(this)
-                                .load(coverURL)
-                                .sizeMultiplier(0.01f)
-                )
-                .sizeMultiplier(0.8f)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .thumbnail(thumbnailRequest) // ✅ RequestBuilder with multiplier
+                .sizeMultiplier(0.8f)        // ✅ final image size 80%
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // optional
                 .into(coverImageView);
+
 
         // 📝 Set name
         nameTextView.setText(name);
