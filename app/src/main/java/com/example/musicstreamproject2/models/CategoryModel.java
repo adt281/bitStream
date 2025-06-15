@@ -1,18 +1,20 @@
+// Used to both category as well as for sections [sections- all the dynamic lists we are displaying below categories]
+
+
 package com.example.musicstreamproject2.models;
 
 import java.util.List;
-
 public class CategoryModel {
     String name=null;
-    String coverURL=null;
+    String coverUrl =null;
     List<Integer> songs=null;
     public CategoryModel() {
     }
 
-    public CategoryModel(String name, String coverURL, List<Integer> songs)
+    public CategoryModel(String name, String coverUrl, List<Integer> songs)
     {
         this.name=name;
-        this.coverURL=coverURL;
+        this.coverUrl = coverUrl;
         this.songs=songs;
     }
 
@@ -20,9 +22,9 @@ public class CategoryModel {
     {
         return name;
     }
-    public String getCoverURL()
+    public String getCoverUrl()
     {
-        return coverURL;
+        return coverUrl;
     }
     public List<Integer> getSongs()
     {

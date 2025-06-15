@@ -52,11 +52,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         // setup glide and load images using URL
         // .thumbnail() deprecated use this [suggested by glide documentation to replecate .thumbnail()]
         RequestBuilder<Drawable> thumbnailRequest = Glide.with(holder.itemView.getContext())
-                .load(categoryModel.getCoverURL())
+                .load(categoryModel.getCoverUrl())
                 .sizeMultiplier(0.01f); // tiny thumbnail
 
         Glide.with(holder.itemView.getContext())
-                .load(categoryModel.getCoverURL())
+                .load(categoryModel.getCoverUrl())
                 .thumbnail(thumbnailRequest) // ✅ RequestBuilder with multiplier
                 .sizeMultiplier(0.6f)        // ✅ final image size 60%
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // optional
@@ -76,7 +76,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                 //TODO: Launching SongsListActivity and Sending all the data !!!!
                 Intent intent = new Intent(context, SongsListActivity.class);
                 intent.putExtra("category_name", categoryModel.getName());
-                intent.putExtra("category_coverURL", categoryModel.getCoverURL());
+                intent.putExtra("category_coverURL", categoryModel.getCoverUrl());
                 intent.putIntegerArrayListExtra("category_songs", new ArrayList<>(categoryModel.getSongs()));
                 context.startActivity(intent);
             }

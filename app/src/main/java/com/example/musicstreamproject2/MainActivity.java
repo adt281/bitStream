@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //TODO: Recycler view Horizontal setup
-        recyclerView = findViewById(R.id.categoryViewID);
+        recyclerView = findViewById(R.id.categories_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         getCategories();

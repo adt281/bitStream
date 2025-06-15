@@ -23,18 +23,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp" />
 
-
+    <!-- FIXED ImageView to match screenshot -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/song_cover_image_view"
-        android:layout_width="412dp"
-        android:layout_height="320dp"
-        android:layout_margin="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="24dp"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toBottomOf="@id/now_playing_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:shapeAppearanceOverlay="@style/RoundedImageView" />
-
-
+        app:layout_constraintDimensionRatio="1:1"
+        app:cornerSize="16dp"
+        app:cornerFamily="rounded" />
     <!-- Song Title -->
     <TextView
         android:id="@+id/song_title_text_view"
