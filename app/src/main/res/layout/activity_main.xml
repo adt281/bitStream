@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+TODO: Screen Layout Plan:
+
+1. One main vertical RecyclerView - holds all sections.
+
+2. Create separate layout files for each section type:
+   - Example:
+     - Categories: unique layout
+     - Sections (Top Albums, Recently Played): share the same layout
+
+     Will have to add using backend code. [as intended for dynamic scaling of UI ]
+
+3. Inside each section: use nested horizontal RecyclerViews.
+
+4. For cards:
+   - Use the same layout file if the design is the same
+   - Create a separate layout file if the design differs
+-->
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -55,151 +74,19 @@
             app:layout_constraintBottom_toBottomOf="@id/imageView2"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Scroll Content -->
-    <ScrollView
-        android:id="@+id/contentScroll"
+    <!-- TODO: Main RecyclerView holding all sections -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/categories_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="80dp"
-        android:layout_marginHorizontal="8dp"
+        android:paddingHorizontal="8dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/topBar"
         app:layout_constraintBottom_toTopOf="@id/player_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- From original code -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Categories"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:fontFamily="sans-serif-medium" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/categories_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="30dp"/>
-
-
-
-            <!--TODO: 3 sections  with visibility set to "gone"
-            May add more sections as per UI requirement.
-            -->
-            <!-- Section 1 -->
-            <RelativeLayout
-                android:id="@+id/section_1_main_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/section_1_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:fontFamily="sans-serif-medium"/>
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_arrow_right"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/section_1_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/section_1_title"
-
-                    />
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="30dp"/>
-
-            <!-- Section 2 -->
-            <RelativeLayout
-                android:id="@+id/section_2_main_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/section_2_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:fontFamily="sans-serif-medium"/>
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_arrow_right"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/section_2_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/section_2_title"/>
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="30dp"/>
-
-            <!-- Section 3 -->
-            <RelativeLayout
-                android:id="@+id/section_3_main_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/section_3_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:fontFamily="sans-serif-medium"/>
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_arrow_right"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/section_3_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/section_3_title"/>
-            </RelativeLayout>
-        </LinearLayout>
-    </ScrollView>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Mini Player at bottom -->
-    <!-- TODO: Change this layout with custom layout file built for
-     mini player with the ExoPlayer player UI -->
-
-
     <RelativeLayout
         android:id="@+id/player_view"
         android:layout_width="0dp"
