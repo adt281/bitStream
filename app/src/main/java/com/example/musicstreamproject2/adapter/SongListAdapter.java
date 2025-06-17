@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyViewHolder>{
 
-    //TODO: Instead of songModel objects we just take in the song ID's and obtain the SongModel from the songs database!!
+
     ArrayList<SongModel> arrayList;
 
     Context context;
@@ -62,7 +62,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
         Glide.with(holder.itemView.getContext())
                 .load(songModel.getCoverUrl())
                 .thumbnail(thumbnailRequest) // ✅ RequestBuilder with multiplier
-                .sizeMultiplier(0.5f)        // ✅ final image size 10%
+                .sizeMultiplier(0.8f)        // ✅ final image size 80%
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // optional
                 .into(holder.imageView);
 

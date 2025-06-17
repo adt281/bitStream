@@ -1,7 +1,11 @@
 package com.example.musicstreamproject2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +17,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicstreamproject2.adapter.CategoryAdapter;
+import com.example.musicstreamproject2.adapter.SectionSongListAdapter;
 import com.example.musicstreamproject2.models.CategoryModel;
+import com.example.musicstreamproject2.models.SongModel;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.PersistentCacheSettings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +53,24 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         getCategories();
+
+        //TODO: for sections:
+        RelativeLayout section1MainLayout = findViewById(R.id.section_1_main_layout);
+        TextView section1Title = findViewById(R.id.section_1_title);
+        RecyclerView section1RecyclerView = findViewById(R.id.section_1_recycler_view);
+
+        RelativeLayout section2MainLayout = findViewById(R.id.section_2_main_layout);
+        TextView section2Title = findViewById(R.id.section_2_title);
+        RecyclerView section2RecyclerView = findViewById(R.id.section_2_recycler_view);
+
+        RelativeLayout section3MainLayout = findViewById(R.id.section_3_main_layout);
+        TextView section3Title = findViewById(R.id.section_3_title);
+        RecyclerView section3RecyclerView = findViewById(R.id.section_3_recycler_view);
+
+        setupSection("section_1", section1MainLayout, section1Title, section1RecyclerView);
+        setupSection("section_2", section2MainLayout, section2Title, section2RecyclerView);
+        setupSection("section_3", section3MainLayout, section3Title, section3RecyclerView);
+
 
     }
 
@@ -76,7 +103,63 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(categoryAdapter);
 
     }
+    private void setupSection(String id, RelativeLayout mainLayout, TextView titleView, RecyclerView recyclerView) {
+        FirebaseFirestore.getInstance().collection("sections")
+                .document(id)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    CategoryModel section = documentSnapshot.toObject(CategoryModel.class);
+                    if (section != null && section.getSongs() != null && !section.getSongs().isEmpty()) {
 
+                        recyclerView.setLayoutManager(new LinearLayoutManager(
+                                MainActivity.this,
+                                LinearLayoutManager.HORIZONTAL,
+                                false
+                        ));
+
+                        // 🔁 Convert List<Integer> to List<String>
+                        List<String> stringIds = section.getSongs().stream()
+                                .map(String::valueOf)
+                                .collect(Collectors.toList());
+
+                        // 🔍 Fetch the songs using whereIn on documentId
+                        FirebaseFirestore.getInstance().collection("songs")
+                                .whereIn(FieldPath.documentId(), stringIds.subList(0, Math.min(10, stringIds.size())))
+                                .get()
+                                .addOnSuccessListener(querySnapshot -> {
+                                    List<SongModel> songsList = new ArrayList<>();
+                                    for (DocumentSnapshot doc : querySnapshot) {
+                                        SongModel model = doc.toObject(SongModel.class);
+                                        if (model != null) {
+                                            songsList.add(model);
+                                        }
+                                    }
+
+                                    // 🎯 Set adapter with fetched songs
+                                    SectionSongListAdapter adapter = new SectionSongListAdapter(
+                                            (ArrayList<SongModel>) songsList,
+                                            MainActivity.this
+                                    );
+                                    recyclerView.setAdapter(adapter);
+                                    // ✅ Show layout and set title AFTER data is ready
+                                    mainLayout.setVisibility(View.VISIBLE);
+                                    titleView.setText(section.getName());
+
+                                });
+
+
+                        // 🎬 Handle click to open full section
+                        mainLayout.setOnClickListener(v -> {
+                            Intent intent = new Intent(MainActivity.this, SongsListActivity.class);
+                            intent.putExtra("category_name", section.getName());
+                            intent.putExtra("category_coverURL", section.getCoverUrl());
+                            ArrayList<Integer> songIds = new ArrayList<>(section.getSongs());
+                            intent.putIntegerArrayListExtra("category_songs", songIds);
+                            startActivity(intent);
+                        });
+                    }
+                });
+    }
 
 
 
