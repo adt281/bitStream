@@ -72,6 +72,11 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
                 // Start playing the song
                 MyExoPlayer.startPlaying(holder.itemView.getContext(), songModel);
 
+                // Show mini player if context is MainActivity
+                if (context instanceof com.example.musicstreamproject2.MainActivity) {
+                    ((com.example.musicstreamproject2.MainActivity) context).showMiniPlayer(songModel);
+                }
+
                 // Start PlayerActivity
                 Context context = holder.itemView.getContext();
                 Intent intent = new Intent(context, PlayerActivity.class);

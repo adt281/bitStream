@@ -27,7 +27,7 @@ import com.example.musicstreamproject2.player.PlayerActivity;
 
 import java.util.ArrayList;
 
-public class SectionSongListAdapter  extends RecyclerView.Adapter<SectionSongListAdapter.MyViewHolder>{
+public class SectionSongListAdapter extends RecyclerView.Adapter<SectionSongListAdapter.MyViewHolder> {
 
     ArrayList<SongModel> arrayList;
 
@@ -74,6 +74,11 @@ public class SectionSongListAdapter  extends RecyclerView.Adapter<SectionSongLis
                 // Start playing the song
                 MyExoPlayer.startPlaying(holder.itemView.getContext(), songModel);
 
+                // Show mini player if context is MainActivity
+                if (context instanceof com.example.musicstreamproject2.MainActivity) {
+                    ((com.example.musicstreamproject2.MainActivity) context).showMiniPlayer(songModel);
+                }
+
                 // Start PlayerActivity
                 Context context = holder.itemView.getContext();
                 Intent intent = new Intent(context, PlayerActivity.class);
@@ -101,9 +106,6 @@ public class SectionSongListAdapter  extends RecyclerView.Adapter<SectionSongLis
             textViewTitle=itemView.findViewById(R.id.song_title_text_view);
             textViewSubtitle=itemView.findViewById(R.id.song_subtitle_text_view);
             imageView=itemView.findViewById(R.id.song_cover_image_view);
-
-
-
         }
     }
 

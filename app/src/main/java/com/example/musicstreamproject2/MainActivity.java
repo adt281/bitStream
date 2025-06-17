@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ import com.example.musicstreamproject2.adapter.CategoryAdapter;
 import com.example.musicstreamproject2.adapter.SectionSongListAdapter;
 import com.example.musicstreamproject2.models.CategoryModel;
 import com.example.musicstreamproject2.models.SongModel;
+import com.example.musicstreamproject2.player.MiniPlayer;
+import com.example.musicstreamproject2.player.MyExoPlayer;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,8 +35,9 @@ import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
-
     RecyclerView recyclerView;
+    private MiniPlayer miniPlayer;
+    private FrameLayout miniPlayerContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +50,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-
+        // Initialize mini player
+        miniPlayerContainer = findViewById(R.id.mini_player_container);
+        miniPlayer = new MiniPlayer(this);
+        miniPlayerContainer.addView(miniPlayer.getView());
 
         //TODO: Recycler view Horizontal setup
         recyclerView = findViewById(R.id.categories_recycler_view);
@@ -70,10 +77,40 @@ public class MainActivity extends AppCompatActivity {
         setupSection("section_1", section1MainLayout, section1Title, section1RecyclerView);
         setupSection("section_2", section2MainLayout, section2Title, section2RecyclerView);
         setupSection("section_3", section3MainLayout, section3Title, section3RecyclerView);
-
-
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update mini player when returning to MainActivity
+        SongModel currentSong = MyExoPlayer.getCurrentSong();
+        if (currentSong != null) {
+            showMiniPlayer(currentSong);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (miniPlayer != null) {
+            miniPlayer.destroy();
+        }
+    }
+
+    public void showMiniPlayer(SongModel song) {
+        if (miniPlayer != null && song != null) {
+            miniPlayer.updateSong(song);
+            miniPlayer.showMiniPlayer();
+            miniPlayerContainer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideMiniPlayer() {
+        if (miniPlayer != null) {
+            miniPlayer.hideMiniPlayer();
+            miniPlayerContainer.setVisibility(View.GONE);
+        }
+    }
 
     void getCategories() {
 

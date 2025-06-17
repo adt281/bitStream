@@ -1,0 +1,137 @@
+package com.example.musicstreamproject2.player;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.media3.common.Player;
+import androidx.media3.exoplayer.ExoPlayer;
+
+import com.bumptech.glide.Glide;
+import com.example.musicstreamproject2.R;
+import com.example.musicstreamproject2.models.SongModel;
+
+public class MiniPlayer {
+    private View miniPlayerView;
+    private Context context;
+    private ImageView coverImageView;
+    private TextView titleTextView;
+    private TextView artistTextView;
+    private ImageButton playPauseButton;
+    private ImageButton closeButton;
+    private ExoPlayer exoPlayer;
+
+    private Player.Listener playerListener = new Player.Listener() {
+        @Override
+        public void onPlaybackStateChanged(int playbackState) {
+            updatePlayPauseButton();
+        }
+
+        @Override
+        public void onIsPlayingChanged(boolean isPlaying) {
+            updatePlayPauseButton();
+        }
+    };
+
+    public MiniPlayer(Context context) {
+        this.context = context;
+        initializeViews();
+        setupClickListeners();
+        exoPlayer = MyExoPlayer.getInstance();
+        if (exoPlayer != null) {
+            exoPlayer.addListener(playerListener);
+        }
+    }
+
+    private void initializeViews() {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        miniPlayerView = inflater.inflate(R.layout.mini_player, null);
+
+        coverImageView = miniPlayerView.findViewById(R.id.mini_player_cover);
+        titleTextView = miniPlayerView.findViewById(R.id.mini_player_title);
+        artistTextView = miniPlayerView.findViewById(R.id.mini_player_artist);
+        playPauseButton = miniPlayerView.findViewById(R.id.mini_player_play_pause);
+        closeButton = miniPlayerView.findViewById(R.id.mini_player_close);
+    }
+
+    private void setupClickListeners() {
+        playPauseButton.setOnClickListener(v -> {
+            if (MyExoPlayer.isPlaying()) {
+                MyExoPlayer.pausePlayer();
+                // Update service
+                Intent serviceIntent = new Intent(context, MusicService.class);
+                serviceIntent.setAction("PAUSE");
+                context.startService(serviceIntent);
+            } else {
+                MyExoPlayer.resumePlayer();
+                // Update service
+                Intent serviceIntent = new Intent(context, MusicService.class);
+                serviceIntent.setAction("RESUME");
+                context.startService(serviceIntent);
+            }
+        });
+
+        closeButton.setOnClickListener(v -> {
+            // Stop music and hide mini player
+            MyExoPlayer.pausePlayer();
+            Intent serviceIntent = new Intent(context, MusicService.class);
+            serviceIntent.setAction("STOP");
+            context.startService(serviceIntent);
+            hideMiniPlayer();
+        });
+
+        miniPlayerView.setOnClickListener(v -> {
+            // Open full player activity
+            Intent intent = new Intent(context, PlayerActivity.class);
+            context.startActivity(intent);
+        });
+    }
+
+    public void updateSong(SongModel song) {
+        if (song != null) {
+            titleTextView.setText(song.getTitle());
+            artistTextView.setText(song.getSubtitle());
+
+            Glide.with(context)
+                    .load(song.getCoverUrl())
+                    .placeholder(R.drawable.logo)
+                    .error(R.drawable.logo)
+                    .into(coverImageView);
+        }
+        updatePlayPauseButton();
+    }
+
+    private void updatePlayPauseButton() {
+        if (MyExoPlayer.isPlaying()) {
+            playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+        } else {
+            playPauseButton.setImageResource(android.R.drawable.ic_media_play);
+        }
+    }
+
+    public View getView() {
+        return miniPlayerView;
+    }
+
+    public void showMiniPlayer() {
+        if (miniPlayerView != null) {
+            miniPlayerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideMiniPlayer() {
+        if (miniPlayerView != null) {
+            miniPlayerView.setVisibility(View.GONE);
+        }
+    }
+
+    public void destroy() {
+        if (exoPlayer != null) {
+            exoPlayer.removeListener(playerListener);
+        }
+    }
+}
