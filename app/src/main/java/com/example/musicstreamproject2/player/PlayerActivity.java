@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.OptIn;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,8 +19,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.musicstreamproject2.R;
 import com.example.musicstreamproject2.databinding.ActivityPlayerBinding;
 import com.example.musicstreamproject2.models.SongModel;
+import com.example.musicstreamproject2.BaseActivity;
 
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerActivity extends BaseActivity {
 
     private ActivityPlayerBinding binding;
     private ExoPlayer exoPlayer;

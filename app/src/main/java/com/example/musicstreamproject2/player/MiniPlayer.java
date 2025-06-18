@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
 
 import com.bumptech.glide.Glide;
 import com.example.musicstreamproject2.R;
@@ -21,19 +21,18 @@ public class MiniPlayer {
     private ImageView coverImageView;
     private TextView titleTextView;
     private TextView artistTextView;
-    private ImageButton playPauseButton;
-    private ImageButton closeButton;
+    private PlayerView playerView;
     private ExoPlayer exoPlayer;
 
     private Player.Listener playerListener = new Player.Listener() {
         @Override
         public void onPlaybackStateChanged(int playbackState) {
-            updatePlayPauseButton();
+            // ExoPlayer handles UI updates automatically
         }
 
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
-            updatePlayPauseButton();
+            updateServiceState(isPlaying);
         }
     };
 
@@ -43,6 +42,7 @@ public class MiniPlayer {
         setupClickListeners();
         exoPlayer = MyExoPlayer.getInstance();
         if (exoPlayer != null) {
+            playerView.setPlayer(exoPlayer);
             exoPlayer.addListener(playerListener);
         }
     }
@@ -54,41 +54,25 @@ public class MiniPlayer {
         coverImageView = miniPlayerView.findViewById(R.id.mini_player_cover);
         titleTextView = miniPlayerView.findViewById(R.id.mini_player_title);
         artistTextView = miniPlayerView.findViewById(R.id.mini_player_artist);
-        playPauseButton = miniPlayerView.findViewById(R.id.mini_player_play_pause);
-        closeButton = miniPlayerView.findViewById(R.id.mini_player_close);
+        playerView = miniPlayerView.findViewById(R.id.mini_player_controls);
     }
 
     private void setupClickListeners() {
-        playPauseButton.setOnClickListener(v -> {
-            if (MyExoPlayer.isPlaying()) {
-                MyExoPlayer.pausePlayer();
-                // Update service
-                Intent serviceIntent = new Intent(context, MusicService.class);
-                serviceIntent.setAction("PAUSE");
-                context.startService(serviceIntent);
-            } else {
-                MyExoPlayer.resumePlayer();
-                // Update service
-                Intent serviceIntent = new Intent(context, MusicService.class);
-                serviceIntent.setAction("RESUME");
-                context.startService(serviceIntent);
-            }
-        });
-
-        closeButton.setOnClickListener(v -> {
-            // Stop music and hide mini player
-            MyExoPlayer.pausePlayer();
-            Intent serviceIntent = new Intent(context, MusicService.class);
-            serviceIntent.setAction("STOP");
-            context.startService(serviceIntent);
-            hideMiniPlayer();
-        });
-
         miniPlayerView.setOnClickListener(v -> {
             // Open full player activity
             Intent intent = new Intent(context, PlayerActivity.class);
             context.startActivity(intent);
         });
+    }
+
+    private void updateServiceState(boolean isPlaying) {
+        Intent serviceIntent = new Intent(context, MusicService.class);
+        if (isPlaying) {
+            serviceIntent.setAction("RESUME");
+        } else {
+            serviceIntent.setAction("PAUSE");
+        }
+        context.startService(serviceIntent);
     }
 
     public void updateSong(SongModel song) {
@@ -102,14 +86,13 @@ public class MiniPlayer {
                     .error(R.drawable.logo)
                     .into(coverImageView);
         }
-        updatePlayPauseButton();
     }
 
-    private void updatePlayPauseButton() {
-        if (MyExoPlayer.isPlaying()) {
-            playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
-        } else {
-            playPauseButton.setImageResource(android.R.drawable.ic_media_play);
+    public void updatePlayer() {
+        exoPlayer = MyExoPlayer.getInstance();
+        if (exoPlayer != null && playerView != null) {
+            playerView.setPlayer(exoPlayer);
+            exoPlayer.addListener(playerListener);
         }
     }
 

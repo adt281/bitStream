@@ -48,21 +48,17 @@
 
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/mini_player_play_pause"
-        android:layout_width="40dp"
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/mini_player_controls"
+        android:layout_width="80dp"
         android:layout_height="40dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_media_pause"
-        app:tint="@android:color/white"
-        android:layout_marginEnd="8dp" />
-
-    <ImageButton
-        android:id="@+id/mini_player_close"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"
-        app:tint="@android:color/white" />
+        app:use_artwork="false"
+        app:show_buffering="never"
+        app:show_shuffle_button="false"
+        app:show_previous_button="false"
+        app:show_next_button="false"
+        app:show_fastforward_button="false"
+        app:show_rewind_button="false"
+        app:controller_layout_id="@layout/mini_player_controls" />
 
 </LinearLayout>

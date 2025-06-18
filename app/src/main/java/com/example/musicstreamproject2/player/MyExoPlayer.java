@@ -10,11 +10,16 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackParameters;
 import androidx.media3.exoplayer.ExoPlayer;
 
+import com.example.musicstreamproject2.BaseActivity;
 import com.example.musicstreamproject2.models.SongModel;
 
 public class MyExoPlayer {
     private static ExoPlayer exoPlayer = null;
     private static SongModel currentSong = null;
+
+    public interface OnSongChangeListener {
+        void onSongChanged(SongModel song);
+    }
 
     private MyExoPlayer() {
         // private constructor to prevent instantiation
@@ -56,9 +61,14 @@ public class MyExoPlayer {
                 exoPlayer.play();
 
                 // Start background service
-                Intent serviceIntent = new Intent(context, com.example.musicstreamproject2.player.MusicService.class);
+                Intent serviceIntent = new Intent(context, MusicService.class);
                 serviceIntent.setAction("PLAY");
                 context.startForegroundService(serviceIntent);
+
+                // Notify BaseActivity to show mini player
+                if (context instanceof BaseActivity) {
+                    ((BaseActivity) context).showMiniPlayer(currentSong);
+                }
             }
         }
     }
