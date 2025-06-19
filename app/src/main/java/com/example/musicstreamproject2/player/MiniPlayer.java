@@ -6,8 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
 
+import androidx.annotation.OptIn;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
@@ -26,16 +29,12 @@ public class MiniPlayer {
 
     private Player.Listener playerListener = new Player.Listener() {
         @Override
-        public void onPlaybackStateChanged(int playbackState) {
-            // ExoPlayer handles UI updates automatically
-        }
-
-        @Override
         public void onIsPlayingChanged(boolean isPlaying) {
             updateServiceState(isPlaying);
         }
     };
 
+    @OptIn(markerClass = UnstableApi.class)
     public MiniPlayer(Context context) {
         this.context = context;
         initializeViews();
@@ -43,6 +42,8 @@ public class MiniPlayer {
         exoPlayer = MyExoPlayer.getInstance();
         if (exoPlayer != null) {
             playerView.setPlayer(exoPlayer);
+            //playerView.setShowTimeoutMs(0);
+            playerView.showController();
             exoPlayer.addListener(playerListener);
         }
     }
@@ -59,26 +60,25 @@ public class MiniPlayer {
 
     private void setupClickListeners() {
         miniPlayerView.setOnClickListener(v -> {
-            // Open full player activity
             Intent intent = new Intent(context, PlayerActivity.class);
             context.startActivity(intent);
         });
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private void updateServiceState(boolean isPlaying) {
         Intent serviceIntent = new Intent(context, MusicService.class);
-        if (isPlaying) {
-            serviceIntent.setAction("RESUME");
-        } else {
-            serviceIntent.setAction("PAUSE");
-        }
+        playerView.showController();
+        serviceIntent.setAction(isPlaying ? "RESUME" : "PAUSE");
         context.startService(serviceIntent);
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     public void updateSong(SongModel song) {
         if (song != null) {
             titleTextView.setText(song.getTitle());
-            artistTextView.setText(song.getSubtitle());
+            artistTextView.setText(" • " + song.getSubtitle());
+            playerView.showController();
 
             Glide.with(context)
                     .load(song.getCoverUrl())
@@ -86,12 +86,19 @@ public class MiniPlayer {
                     .error(R.drawable.logo)
                     .into(coverImageView);
         }
+
+        // Always update the player as part of song update
+        updatePlayer(); // <-- Ensures PlayerView is refreshed when song changes
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     public void updatePlayer() {
+        Log.d("MiniPlayer", "updatePlayer called");
         exoPlayer = MyExoPlayer.getInstance();
         if (exoPlayer != null && playerView != null) {
             playerView.setPlayer(exoPlayer);
+            //playerView.setShowTimeoutMs(0);
+            playerView.showController();
             exoPlayer.addListener(playerListener);
         }
     }
@@ -100,9 +107,12 @@ public class MiniPlayer {
         return miniPlayerView;
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     public void showMiniPlayer() {
         if (miniPlayerView != null) {
             miniPlayerView.setVisibility(View.VISIBLE);
+
+            playerView.showController();
         }
     }
 

@@ -26,14 +26,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void setupMiniPlayer() {
-        // Find mini player container in the layout
         miniPlayerContainer = findViewById(R.id.mini_player_container);
 
         if (miniPlayerContainer != null) {
             miniPlayer = new MiniPlayer(this);
             miniPlayerContainer.addView(miniPlayer.getView());
 
-            // Update mini player if there's a current song
             SongModel currentSong = MyExoPlayer.getCurrentSong();
             if (currentSong != null) {
                 showMiniPlayer(currentSong);
@@ -62,7 +60,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Update mini player state when activity resumes
         if (miniPlayer != null) {
             SongModel currentSong = MyExoPlayer.getCurrentSong();
             if (currentSong != null) {

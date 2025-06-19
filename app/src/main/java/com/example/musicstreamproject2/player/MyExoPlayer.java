@@ -56,6 +56,7 @@ public class MyExoPlayer {
             if (url != null) {
                 MediaItem mediaItem = MediaItem.fromUri(Uri.parse(url));
                 exoPlayer.setMediaItem(mediaItem);
+
                 exoPlayer.setPlaybackParameters(new PlaybackParameters(1f));
                 exoPlayer.prepare();
                 exoPlayer.play();

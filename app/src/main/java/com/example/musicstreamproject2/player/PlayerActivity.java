@@ -98,6 +98,7 @@ public class PlayerActivity extends BaseActivity {
         super.onDestroy();
         if (exoPlayer != null) {
             exoPlayer.removeListener(playerListener); // Clean up
+            binding.playerView.setPlayer(null);
         }
     }
 }
