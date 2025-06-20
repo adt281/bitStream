@@ -1,3 +1,22 @@
+/**
+  BaseActivity serves as a common parent activity for all activities in the app
+  that want to include a persistent mini music player (MiniPlayer) at the bottom.
+
+ * Key responsibilities:
+  - Initializes and embeds the MiniPlayer view inside a container defined by the layout.
+  - Automatically handles showing/hiding the MiniPlayer based on the current playing song.
+  - Updates the MiniPlayer when the activity resumes.
+  - Manages MiniPlayer lifecycle (initialization and cleanup).
+
+  TODO: (IMP)  Any activity extending BaseActivity must include a FrameLayout with the ID 'mini_player_container'
+        in its layout to correctly display the MiniPlayer.
+
+
+ main purpose is so that in each activity you wont need to write code for infalting miniplayer. You just do "extend baseActivity"
+ */
+
+
+
 package com.example.musicstreamproject2;
 
 import android.os.Bundle;

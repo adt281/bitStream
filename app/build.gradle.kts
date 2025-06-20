@@ -47,6 +47,8 @@ dependencies {
     implementation("androidx.media3:media3-ui-compose:1.7.1")
     implementation("androidx.media3:media3-session:1.7.1")
 
+    //mediaSession Compat:
+    implementation("androidx.media:media:1.6.0")
 
 
     implementation(libs.appcompat)

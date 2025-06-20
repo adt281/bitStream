@@ -1,3 +1,22 @@
+/**
+ MiniPlayer is a reusable UI component that acts as a compact, interactive music player
+ shown at the bottom of the screen — similar to popular music streaming apps.
+
+ Key Features:
+ - Inflates a custom layout (mini_player.xml) just like custom BottomSheetLayout or AlertDialog.
+ - Displays song title, artist, and cover image using data from SongModel.
+ - Includes media playback controls powered by ExoPlayer, shown via a PlayerView.
+ - Starts the full PlayerActivity when clicked.
+ - Automatically updates UI and playback state (e.g., pause/resume) when song or player state changes.
+ - Integrates with a MusicService to notify playback changes (RESUME/PAUSE).
+ - Provides methods to show, hide, and destroy the MiniPlayer.
+
+ Typical Usage:
+ - This class is instantiated inside BaseActivity or any activity with a FrameLayout
+ container (like a placeholder) where this mini player can be dynamically added.
+ */
+
+
 package com.example.musicstreamproject2.player;
 
 import android.content.Context;

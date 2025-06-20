@@ -1,3 +1,26 @@
+/**
+ MyExoPlayer is a singleton-like helper class that manages a shared instance of ExoPlayer
+ for playing audio throughout the app.
+
+ Key Features:
+ - Maintains a single ExoPlayer instance across activities for efficient resource use.
+ - Keeps track of the currently playing song (SongModel).
+ - Provides utility methods to start, pause, resume, and release playback.
+ - Automatically prepares and plays a MediaItem when a new song is started.
+ - Starts MusicService in foreground when playback begins.
+ - Notifies BaseActivity (if context is an instance) to show the MiniPlayer.
+
+ Typical Usage:
+ - Call MyExoPlayer.getInstance(context) to initialize or retrieve the player.
+ - Call startPlaying(context, song) to begin playback of a song.
+ - Other components like MiniPlayer or activities can use pausePlayer(), resumePlayer(), or isPlaying()
+ to control or check playback status.
+ */
+
+
+
+
+
 package com.example.musicstreamproject2.player;
 
 import android.content.Context;
