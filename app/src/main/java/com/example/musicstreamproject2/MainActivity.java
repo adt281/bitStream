@@ -1,6 +1,9 @@
 package com.example.musicstreamproject2;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -38,6 +44,9 @@ public class MainActivity extends BaseActivity {
     private MiniPlayer miniPlayer;
     private FrameLayout miniPlayerContainer;
 
+    // Permission request code
+    private static final int PERMISSION_REQUEST_CODE = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +57,9 @@ public class MainActivity extends BaseActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        //permissions:
+        requestNotificationPermission();
 
         // Initialize mini player
         miniPlayerContainer = findViewById(R.id.mini_player_container);
@@ -197,6 +209,55 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
+    // SDK-aware permission request
+    private void requestNotificationPermission() {
+        // POST_NOTIFICATIONS: Required runtime permission on Android 13+ (API 33+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        PERMISSION_REQUEST_CODE);
+            }
+        }
+        // Note: FOREGROUND_SERVICE_MEDIA_PLAYBACK is handled in manifest for API 34+
+        // INTERNET, WAKE_LOCK, FOREGROUND_SERVICE are normal permissions (auto-granted)
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted - notifications will work
+                Log.d("Permissions", "Notification permission granted");
+            } else {
+                // Permission denied - handle gracefully
+                handleNotificationPermissionDenied();
+            }
+        }
+    }
+
+    private void handleNotificationPermissionDenied() {
+
+        Log.w("Permissions", "Notification permission denied - media controls won't show in notifications");
+
+        showNotificationPermissionDialog();
+    }
+
+    // Optional: Show explanation dialog
+    private void showNotificationPermissionDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Media Controls")
+                .setMessage("Without notification permission, you won't see media controls in your notification panel while music is playing.")
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Settings", (dialog, which) -> {
+                    // Open app settings
+                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(android.net.Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                })
+                .show();
+    }
 
 
 }

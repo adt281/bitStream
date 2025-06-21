@@ -94,29 +94,37 @@ public class MusicService extends Service {
 
         mediaSession.setActive(true);
     }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent != null ? intent.getAction() : null;
 
-        if ("PLAY".equals(action)) {
+        if ("PLAY".equals(action) || "RESUME".equals(action) ||
+                "NEXT".equals(action) || "PREVIOUS".equals(action)) {
             startForeground(NOTIFICATION_ID, createNotification());
-        } else if ("PAUSE".equals(action)) {
-            MyExoPlayer.pausePlayer();
-            updateNotification();
-        } else if ("RESUME".equals(action)) {
-            MyExoPlayer.resumePlayer();
-            updateNotification();
-        } else if ("NEXT".equals(action)) {
-            handleNext();
-            updateNotification();
-        } else if ("PREVIOUS".equals(action)) {
-            handlePrevious();
-            updateNotification();
-        } else if ("STOP".equals(action)) {
-            MyExoPlayer.pausePlayer();
-            stopForeground(true);
-            stopSelf();
+        }
+
+        switch (action) {
+            case "PAUSE":
+                MyExoPlayer.pausePlayer();
+                startForeground(NOTIFICATION_ID, createNotification()); // Ensure it updates
+                break;
+            case "RESUME":
+                MyExoPlayer.resumePlayer();
+                startForeground(NOTIFICATION_ID, createNotification());
+                break;
+            case "NEXT":
+                handleNext();
+                startForeground(NOTIFICATION_ID, createNotification());
+                break;
+            case "PREVIOUS":
+                handlePrevious();
+                startForeground(NOTIFICATION_ID, createNotification());
+                break;
+            case "STOP":
+                MyExoPlayer.pausePlayer();
+                stopForeground(true);
+                stopSelf();
+                break;
         }
 
         return START_STICKY;
@@ -144,8 +152,17 @@ public class MusicService extends Service {
 
     private Notification createNotification() {
         SongModel currentSong = MyExoPlayer.getCurrentSong();
-        String title = currentSong != null ? currentSong.getTitle() : "Music Player";
-        String artist = currentSong != null ? currentSong.getSubtitle() : "Unknown Artist";
+
+        // Add null checks and default values
+        String title = "Music Player";
+        String artist = "Unknown Artist";
+
+        if (currentSong != null) {
+            title = currentSong.getTitle() != null && !currentSong.getTitle().isEmpty()
+                    ? currentSong.getTitle() : "Unknown Title";
+            artist = currentSong.getSubtitle() != null && !currentSong.getSubtitle().isEmpty()
+                    ? currentSong.getSubtitle() : "Unknown Artist";
+        }
 
         // Update playback state for MediaSession
         updatePlaybackState();
@@ -162,30 +179,24 @@ public class MusicService extends Service {
         PendingIntent nextIntent = createActionIntent("NEXT", 3);
         PendingIntent stopIntent = createActionIntent("STOP", 4);
 
-        // Create custom notification layout
-        RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
-        RemoteViews notificationLayoutExpanded = new RemoteViews(getPackageName(), R.layout.notification_large);
+        // Create custom expanded view with progress bar
+        RemoteViews expandedView = new RemoteViews(getPackageName(), R.layout.notification_large);
 
-        // Set content for both layouts
-        notificationLayout.setTextViewText(R.id.notification_title, title);
-        notificationLayout.setTextViewText(R.id.notification_artist, artist);
-        notificationLayoutExpanded.setTextViewText(R.id.notification_title, title);
-        notificationLayoutExpanded.setTextViewText(R.id.notification_artist, artist);
-
-        // Set button actions for small layout
-        notificationLayout.setOnClickPendingIntent(R.id.btn_play_pause, playPauseIntent);
-        notificationLayout.setOnClickPendingIntent(R.id.btn_next, nextIntent);
+        // Set content for expanded layout
+        expandedView.setTextViewText(R.id.notification_title, title);
+        expandedView.setTextViewText(R.id.notification_artist, artist);
 
         // Set button actions for expanded layout
-        notificationLayoutExpanded.setOnClickPendingIntent(R.id.btn_previous, previousIntent);
-        notificationLayoutExpanded.setOnClickPendingIntent(R.id.btn_play_pause, playPauseIntent);
-        notificationLayoutExpanded.setOnClickPendingIntent(R.id.btn_next, nextIntent);
-        notificationLayoutExpanded.setOnClickPendingIntent(R.id.btn_stop, stopIntent);
+        expandedView.setOnClickPendingIntent(R.id.btn_previous, previousIntent);
+        expandedView.setOnClickPendingIntent(R.id.btn_play_pause, playPauseIntent);
+        expandedView.setOnClickPendingIntent(R.id.btn_next, nextIntent);
+        expandedView.setOnClickPendingIntent(R.id.btn_stop, stopIntent);
 
         // Set play/pause button icon
         int playPauseIcon = MyExoPlayer.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play;
-        notificationLayout.setImageViewResource(R.id.btn_play_pause, playPauseIcon);
-        notificationLayoutExpanded.setImageViewResource(R.id.btn_play_pause, playPauseIcon);
+        expandedView.setImageViewResource(R.id.btn_play_pause, playPauseIcon);
+
+        // Album art removed - add ImageView with id="album_art" to notification_large.xml if you want it
 
         // Update progress bar if playing
         if (exoPlayer != null) {
@@ -193,23 +204,44 @@ public class MusicService extends Service {
             long position = exoPlayer.getCurrentPosition();
             if (duration > 0) {
                 int progress = (int) ((position * 100) / duration);
-                notificationLayoutExpanded.setProgressBar(R.id.progress_bar, 100, progress, false);
+                expandedView.setProgressBar(R.id.progress_bar, 100, progress, false);
+
+                // Optional: Set time text if you have TextView for it
+                String currentTime = formatTime(position);
+                String totalTime = formatTime(duration);
+                // expandedView.setTextViewText(R.id.current_time, currentTime);
+                // expandedView.setTextViewText(R.id.total_time, totalTime);
             }
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_blank)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle(title)
+                .setContentText(artist)
                 .setContentIntent(pendingIntent)
-                .setCustomContentView(notificationLayout)
-                .setCustomBigContentView(notificationLayoutExpanded)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                // Add MediaStyle for better media controls integration
+
+                // Add media control actions for compact view
+                .addAction(R.drawable.ic_skip_previous, "Previous", previousIntent)
+                .addAction(MyExoPlayer.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play,
+                        MyExoPlayer.isPlaying() ? "Pause" : "Play", playPauseIntent)
+                .addAction(R.drawable.ic_skip_next, "Next", nextIntent)
+
+                // Custom expanded view with progress bar
+                .setCustomBigContentView(expandedView)
+
+                // Use MediaStyle for proper media controls integration
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
-                        .setShowActionsInCompactView(1) // Show play/pause in compact view
-                );
+                        .setShowActionsInCompactView(0, 1, 2)); // Show all three buttons in compact view
+
+        // Set large icon (album art) for compact view if available
+        if (currentSong != null && currentSong.getCoverUrl() != null) {
+            // TODO: Set large icon bitmap here when you implement image loading
+            // builder.setLargeIcon(albumArtBitmap);
+        }
 
         return builder.build();
     }
@@ -238,22 +270,27 @@ public class MusicService extends Service {
     }
 
     private void updateNotification() {
-        NotificationManager manager = getSystemService(NotificationManager.class);
-        if (manager != null) {
-            manager.notify(NOTIFICATION_ID, createNotification());
-        }
+        Notification notification = createNotification();
+        startForeground(NOTIFICATION_ID, notification);  // This updates the notification
     }
+
 
     private void handleNext() {
         // TODO: Implement next song logic when queue system is ready
-        // For now, just a placeholder
         System.out.println("Next song requested - Queue system not implemented yet");
     }
 
     private void handlePrevious() {
         // TODO: Implement previous song logic when queue system is ready
-        // For now, just a placeholder
         System.out.println("Previous song requested - Queue system not implemented yet");
+    }
+
+    // Helper method to format time
+    private String formatTime(long timeMs) {
+        long seconds = timeMs / 1000;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        return String.format("%d:%02d", minutes, seconds);
     }
 
     @Override

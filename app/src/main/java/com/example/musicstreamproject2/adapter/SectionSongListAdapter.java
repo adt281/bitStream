@@ -1,8 +1,12 @@
-//TODO: same working as SongListAdapter.
+/** same working as SongListAdapter.
 
-/* TODO: creating this adapter and not re-using SongListAdapter for future operations where hybrid items
+    creating this adapter and not re-using SongListAdapter for future operations where hybrid items
     [songs and albums] might need to be shown
-*/
+
+
+ */
+
+
 package com.example.musicstreamproject2.adapter;
 
 import android.content.Context;
