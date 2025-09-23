@@ -5,4 +5,3 @@ Features:
 - Song metadata (title, artist, cover image) managed using Firestore
 - Seamless background playback using ExoPlayer and MediaSession
 - Mini-player with media controls and persistent playback
-- User authentication via Firebase Auth (sign-up, login, session management)
